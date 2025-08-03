@@ -213,7 +213,27 @@ fun Project101() {
             Text(if (isStart) "Give up" else "Start")
         }
     }
-}
+} //UI
+
+@Composable //testing
+fun Test101 () {
+    var showDialog by remember { mutableStateOf(true) }
+    Column(
+        modifier = Modifier.fillMaxSize(),
+        verticalArrangement = Arrangement.Center,
+        horizontalAlignment =Alignment.CenterHorizontally
+    ) {
+        if (showDialog) {
+            AlertDialog(
+                onDismissRequest = { showDialog = false },
+                title = { Text("Hello!") },
+                text = { Text("This is a dialog.") },
+                confirmButton = {
+                    TextButton(onClick = { showDialog = false }) {
+                        Text("OK")
+                    }
+                }
+            )
 
 
 
