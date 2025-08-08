@@ -1,134 +1,91 @@
 package com.example.testingground
 
-import android.R
-import android.R.attr.color
-import android.R.attr.onClick
-import android.graphics.Color.alpha
-import android.graphics.Paint
-import android.graphics.fonts.FontStyle
-import android.os.Build
+import ads_mobile_sdk.vi
 import android.os.Bundle
-import android.os.CountDownTimer
-import android.util.Log
-import android.view.RoundedCorner
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
-import androidx.annotation.RequiresApi
+import androidx.activity.viewModels
 import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.background
-import androidx.compose.foundation.clickable
-import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.lazy.LazyRow
-import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.pager.PageSize
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.foundation.verticalScroll
-import androidx.compose.material.ripple.rememberRipple
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Star
 import androidx.compose.material3.Button
-import androidx.compose.material3.ButtonColors
-import androidx.compose.material3.ButtonDefaults
-import androidx.compose.material3.Card
-import androidx.compose.material3.CardDefaults
-import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
-import androidx.compose.material3.TextField
-import androidx.compose.material3.TextFieldColors
-import androidx.compose.material3.TextFieldDefaults
-import androidx.compose.material3.ripple
 import androidx.compose.runtime.Composable
+
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.material3.*
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
+import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.Alignment
-import androidx.compose.ui.Modifier
-import androidx.compose.ui.draganddrop.DragAndDropModifierNode
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.geometry.Size
-import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.Outline
-import androidx.compose.ui.graphics.Path
-import androidx.compose.ui.graphics.Shadow
-import androidx.compose.ui.graphics.Shape
 import androidx.compose.ui.graphics.drawscope.Fill
-import androidx.compose.ui.graphics.drawscope.Stroke
-import androidx.compose.ui.layout.ModifierLocalBeyondBoundsLayout
-import androidx.compose.ui.text.AnnotatedString
-import androidx.compose.ui.text.drawText
-import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-
+import androidx.compose.ui.window.Dialog
+import androidx.lifecycle.viewModelScope
+import com.example.testingground.ui.ContactViewModel
 import com.example.testingground.ui.theme.TestingGroundTheme
-import kotlinx.coroutines.delay
+import androidx.lifecycle.viewmodel.compose.viewModel
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.runBlocking
-import java.time.format.TextStyle
-import kotlin.math.log
 
 
 class MainActivity : ComponentActivity() {
+    private val viewModel by viewModels<ContactViewModel>()
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
         setContent {
             TestingGroundTheme {
-                Scaffold(modifier = Modifier.fillMaxSize()) { innerPadding ->
-                    Project101()
+                Project101()
+                    }
                 }
             }
         }
-    }
-}
-/*
-* Input: Current selected mood and callback for when a new mood is selected.
-Output: UI for clickable mood options.
-* */
+
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun Project101() {
-    var countDown by remember { mutableIntStateOf(10) }
-    var isStart by remember { mutableStateOf(false) }
-    var minutes = countDown / 60
-    var seconds = countDown % 60
-    var formatted = String.format("%02d:%02d", minutes, seconds)
-    LaunchedEffect(isStart) {
-        if (isStart) {
-            while (countDown > 0) {
-                delay(1000)
-                countDown--
-            }
-            delay(200)
-            isStart = false
-        }
-    }
+    val viewModel1: ContactViewModel = viewModel()
     Column(
-        modifier = Modifier
-            .fillMaxSize()
-            .background(Color(0xFF41B3A3)),
-        verticalArrangement = Arrangement.Center,
-        horizontalAlignment = Alignment.CenterHorizontally
+            modifier = Modifier
+                .fillMaxSize()
+                .background(Color(0xFF41B3A3)),
+    verticalArrangement = Arrangement.Center,
+    horizontalAlignment = Alignment.CenterHorizontally
     ) {
-        if (countDown == 0) {
-            Text("\uD83C\uDF33 You've planted a tree successfully", 
-                color = Color.White)
+        if (viewModel1.message.isNotEmpty()) {
+            Text(
+                viewModel1.message,
+                fontSize = 20.sp,
+                color = Color.White,
+                modifier = Modifier.padding(16.dp)
+            )
         }
+
         Box(
             modifier = Modifier
                 .size(width = 250.dp, height = 300.dp),
@@ -175,9 +132,8 @@ fun Project101() {
                             )
                             // Half circle centered horizontally over the oval
                         }
-                        val isTimerFinished by remember { mutableStateOf(false) }
 
-                        if (isStart) {
+                        if (viewModel1.isStart) {
                             Text(
                                 text = "🌱",
                                 fontSize = 40.sp,
@@ -189,59 +145,97 @@ fun Project101() {
                         }
                     }
                 }
-
+            }
         }
-    }
-
         Text(
-            if (isStart) formatted else "00:10",
-            fontSize = 90.sp,
-            color = Color.White,
-            modifier = Modifier
+            if (viewModel1.isStart) viewModel1.formatted else "00:10",
+        fontSize = 90.sp,
+        color = Color.White,
+        modifier = Modifier
         )
         Button(
-            onClick = {
-                if (!isStart) {
-                    isStart = true
-                    countDown = 10
-                } else {
-                    isStart = false
-                    countDown = 10
-                }
-            }
+            onClick = { viewModel1.countdownSwitcher() }
         ) {
-            Text(if (isStart) "Give up" else "Start")
+            Text(if (viewModel1.isStart) "Give up" else "Start")
         }
-    }
-} //UI
 
-@Composable //testing
-fun Test101 () {
-    var showDialog by remember { mutableStateOf(true) }
-    Column(
-        modifier = Modifier.fillMaxSize(),
-        verticalArrangement = Arrangement.Center,
-        horizontalAlignment =Alignment.CenterHorizontally
-    ) {
-        if (showDialog) {
-            AlertDialog(
-                onDismissRequest = { showDialog = false },
-                title = { Text("Hello!") },
-                text = { Text("This is a dialog.") },
-                confirmButton = {
-                    TextButton(onClick = { showDialog = false }) {
+//but how to integrate the logic into my code?
+    }
+    if (viewModel1.isDone) {
+        Dialog(onDismissRequest = { viewModel1.changeIsDone() }) {
+            Surface(
+                shape = RoundedCornerShape(12.dp),
+                tonalElevation = 8.dp,
+                modifier = Modifier.padding(16.dp).size(250.dp, 250.dp),
+                color = Color.White
+            ) {
+                Column(
+                    modifier = Modifier
+                        .padding(24.dp)
+                        .fillMaxWidth(),
+                    verticalArrangement = Arrangement.Top,
+                    horizontalAlignment = Alignment.CenterHorizontally
+                ) {
+                    Text(
+                        "Horray!",
+                        style = MaterialTheme.typography.titleLarge,
+                        color = Color.Black
+                    )
+
+                    Spacer(Modifier.height(15.dp))
+
+                    Text(
+                        "You've earned 15 stars",
+                        style = MaterialTheme.typography.bodyMedium,
+                        color = Color.Black
+                    )
+
+                    Spacer(Modifier.height(24.dp))
+                    Row(
+                        verticalAlignment = Alignment.CenterVertically,
+                        horizontalArrangement = Arrangement.Center
+                    ) {
+                        Icon(
+                            imageVector = Icons.Default.Star,
+                            contentDescription = null,
+                            tint = Color(0xFFffc000),
+                            modifier = Modifier.size(25.dp)
+                        )
+                        Icon(
+                            imageVector = Icons.Default.Star,
+                            contentDescription = null,
+                            tint = Color(0xFFffc000),
+                            modifier = Modifier.size(45.dp)
+                        )
+                        Icon(
+                            imageVector = Icons.Default.Star,
+                            contentDescription = null,
+                            tint = Color(0xFFffc000),
+                            modifier = Modifier.size(25.dp)
+                        )
+                    }
+                    Spacer(modifier = Modifier.height(24.dp))
+                    Button(
+                        onClick = { viewModel1.changeIsDone() },
+                        colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF60cb1a))
+                    ) {
                         Text("OK")
                     }
                 }
-            )
-
-
-
-
-@Preview(showBackground = true)
-@Composable
-fun GreetingPreview() {
-    TestingGroundTheme {
-        Project101()
+            }
+        }
     }
 }
+
+// BUT WHY DOES IT WORK NOW, BUT WHEN I TRIED WITH VIEWMODEL, EVERYTHING BROKE????? WHY??? -> THIS CODE WORKS WELL IN TESTING ENVIRONMENT BUT IT WILL BREAK WHEN I CHANGE THE CONFIGURATION, BUT IF I USE IT WITH VIEWMODEL, THINGS DONT EVEN WORK~!!!
+    @Preview(showBackground = true)
+    @Composable
+    fun GreetingPreview() {
+        TestingGroundTheme {
+            Project101()
+        }
+    }
+
+
+
+
