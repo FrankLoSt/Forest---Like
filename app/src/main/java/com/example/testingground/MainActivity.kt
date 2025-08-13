@@ -1,12 +1,14 @@
 package com.example.testingground
 
 import ads_mobile_sdk.vi
+import android.graphics.Paint
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import androidx.activity.viewModels
 import androidx.compose.foundation.Canvas
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -43,6 +45,11 @@ import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.geometry.Size
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.drawscope.Fill
+import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.layout.ModifierLocalBeyondBoundsLayout
+import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.window.Dialog
@@ -51,6 +58,8 @@ import com.example.testingground.ui.ContactViewModel
 import com.example.testingground.ui.theme.TestingGroundTheme
 import androidx.lifecycle.viewmodel.compose.viewModel
 import kotlinx.coroutines.launch
+import androidx.compose.ui.res.stringResource
+
 
 
 class MainActivity : ComponentActivity() {
@@ -69,161 +78,32 @@ class MainActivity : ComponentActivity() {
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun Project101() {
-    val viewModel1: ContactViewModel = viewModel()
     Column(
-            modifier = Modifier
-                .fillMaxSize()
-                .background(Color(0xFF41B3A3)),
-    verticalArrangement = Arrangement.Center,
-    horizontalAlignment = Alignment.CenterHorizontally
+        modifier = Modifier.fillMaxSize()
     ) {
-        if (viewModel1.message.isNotEmpty()) {
-            Text(
-                viewModel1.message,
-                fontSize = 20.sp,
-                color = Color.White,
-                modifier = Modifier.padding(16.dp)
+            Image(
+                painter = painterResource(R.drawable.bg_compose_background),
+                contentDescription = null,
+                modifier = Modifier.fillMaxWidth()
             )
-        }
-
-        Box(
-            modifier = Modifier
-                .size(width = 250.dp, height = 300.dp),
-            contentAlignment = Alignment.Center
-        ) {
-            Box(
+            Text(
+                text = stringResource(R.string.jetpack_compose_tutorial),
+                fontSize = 24.sp,
+                modifier = Modifier.padding(16.dp),
+                textAlign = TextAlign.Justify
+            )
+            Text(
+                text = stringResource(R.string.jetpack_compose_is_a_modern_toolkit_for_building_native_android_ui_compose_simplifies_and_accelerates_ui_development_on_android_with_less_code_powerful_tools_and_intuitive_kotlin_apis),
                 modifier = Modifier
-                    .background(Color(0xFFE8A87C), shape = CircleShape)
-                    .size(250.dp),
-                contentAlignment = Alignment.Center
-            ) {
-                Card(
-                    modifier = Modifier
-                        .size(245.dp)
-                        .padding(10.dp),
-                    colors = CardDefaults.cardColors(containerColor = Color(0xFFEEE2DC)),
-                    shape = CircleShape,
-                    elevation = CardDefaults.cardElevation(9.dp)
-                ) {
-                    Box() {
-                        Canvas(modifier = Modifier.size(250.dp).padding(16.dp)) {
-                            val canvasWidth = size.width
-                            val canvasHeight = size.height
-                            // Arc size (a wide and tall oval)
-                            val arcWidth = canvasWidth * 0.95f
-                            val arcHeight = canvasHeight * 0.2f
-                            // Position arc at the BOTTOM of the canvas
-                            val arcLeft = (canvasWidth - arcWidth) / 2f
-                            val arcTop = canvasHeight * 0.6f
-                            val arcSize = Size(arcWidth, arcHeight)
-                            drawArc(
-                                color = Color(0xFF5D3A1A),
-                                startAngle = 0f,     // Starts from the left
-                                sweepAngle = 180f,     // Sweeps to the right
-                                useCenter = true,      // Connects to center to form a filled shape
-                                topLeft = Offset(arcLeft, arcTop * 0.54f),
-                                size = Size(arcWidth, arcHeight * 3.5f)
-                            )
-                            drawOval(
-                                color = Color(0xFFA0522D),
-                                topLeft = Offset(arcLeft, arcTop),
-                                size = Size(arcWidth, arcHeight - 25f),
-                                style = Fill
-                            )
-                            // Half circle centered horizontally over the oval
-                        }
+                    .padding(start = 16.dp, end = 16.dp),
+                textAlign = TextAlign.Justify
+            )
+           Text(
+                text = stringResource(R.string.in_this_tutorial_you_build_a_simple_ui_component_with_declarative_functions_you_call_compose_functions_to_say_what_elements_you_want_and_the_compose_compiler_does_the_rest_compose_is_built_around_composable_functions_these_functions_let_you_define_your_app_s_ui_programmatically_because_they_let_you_describe_how_it_should_look_and_provide_data_dependencies_rather_than_focus_on_the_process_of_the_ui_s_construction_such_as_initializing_an_element_and_then_attaching_it_to_a_parent_to_create_a_composable_function_you_add_the_composable_annotation_to_the_function_name),
+               modifier = Modifier.padding(16.dp),
+               textAlign = TextAlign.Justify
+           )
 
-                        if (viewModel1.isStart) {
-                            Text(
-                                text = "🌱",
-                                fontSize = 40.sp,
-                                modifier = Modifier.align(Alignment.Center)
-                            )
-                        } else {
-
-                            Text("🌳", fontSize = 100.sp, modifier = Modifier.offset(48.dp, 37.dp))
-                        }
-                    }
-                }
-            }
-        }
-        Text(
-            if (viewModel1.isStart) viewModel1.formatted else "00:10",
-        fontSize = 90.sp,
-        color = Color.White,
-        modifier = Modifier
-        )
-        Button(
-            onClick = { viewModel1.countdownSwitcher() }
-        ) {
-            Text(if (viewModel1.isStart) "Give up" else "Start")
-        }
-
-//but how to integrate the logic into my code?
-    }
-    if (viewModel1.isDone) {
-        Dialog(onDismissRequest = { viewModel1.changeIsDone() }) {
-            Surface(
-                shape = RoundedCornerShape(12.dp),
-                tonalElevation = 8.dp,
-                modifier = Modifier.padding(16.dp).size(250.dp, 250.dp),
-                color = Color.White
-            ) {
-                Column(
-                    modifier = Modifier
-                        .padding(24.dp)
-                        .fillMaxWidth(),
-                    verticalArrangement = Arrangement.Top,
-                    horizontalAlignment = Alignment.CenterHorizontally
-                ) {
-                    Text(
-                        "Horray!",
-                        style = MaterialTheme.typography.titleLarge,
-                        color = Color.Black
-                    )
-
-                    Spacer(Modifier.height(15.dp))
-
-                    Text(
-                        "You've earned 15 stars",
-                        style = MaterialTheme.typography.bodyMedium,
-                        color = Color.Black
-                    )
-
-                    Spacer(Modifier.height(24.dp))
-                    Row(
-                        verticalAlignment = Alignment.CenterVertically,
-                        horizontalArrangement = Arrangement.Center
-                    ) {
-                        Icon(
-                            imageVector = Icons.Default.Star,
-                            contentDescription = null,
-                            tint = Color(0xFFffc000),
-                            modifier = Modifier.size(25.dp)
-                        )
-                        Icon(
-                            imageVector = Icons.Default.Star,
-                            contentDescription = null,
-                            tint = Color(0xFFffc000),
-                            modifier = Modifier.size(45.dp)
-                        )
-                        Icon(
-                            imageVector = Icons.Default.Star,
-                            contentDescription = null,
-                            tint = Color(0xFFffc000),
-                            modifier = Modifier.size(25.dp)
-                        )
-                    }
-                    Spacer(modifier = Modifier.height(24.dp))
-                    Button(
-                        onClick = { viewModel1.changeIsDone() },
-                        colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF60cb1a))
-                    ) {
-                        Text("OK")
-                    }
-                }
-            }
-        }
     }
 }
 
